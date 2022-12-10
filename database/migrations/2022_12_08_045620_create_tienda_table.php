@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('nombre');
             $table->string('fecha_apertura');
+            $table->integer('estado')->default(1);
+            
             $table->timestamps();
         });
     }

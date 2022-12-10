@@ -15,11 +15,13 @@ return new class extends Migration
     {
         Schema::create('producto', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
-            $table->string('sku');
-            $table->string('valor');
-            $table->string('tienda');
-            $table->string('image',254);
+            $table->string('nombre',60);
+            $table->string('sku',60)->unique();
+            $table->string('valor',60);
+            $table->string('imagen',254);
+            $table->integer('estado')->default(1);
+            $table->unsignedBigInteger('tienda');
+            $table->foreign('tienda')->references('id')->on('tienda');
             $table->timestamps();
         });
     }
