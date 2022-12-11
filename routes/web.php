@@ -17,7 +17,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
 Route::namespace('App\\Http\\Controllers')->group(function () {
     Route::get('/Producto/Tienda/{id}', 'ProductoControler@productoTienda');
+    Route::post('/Producto', 'ProductoControler@storage')->name('Producto');
+    Route::get('/Producto', 'ProductoControler@index');
+
+    Route::post('/ProductoUpdate', 'ProductoControler@update')->name("ProductoUpdate");
+    Route::get('/ProductoEliminar/{id}', 'ProductoControler@delete');
+    Route::get('/Producto/Tienda/{id}', 'ProductoControler@productoTienda');
+
 });

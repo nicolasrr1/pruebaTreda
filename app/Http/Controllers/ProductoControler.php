@@ -9,10 +9,9 @@ use Illuminate\Support\Facades\Validator;
 
 class ProductoControler extends Controller
 {
+    private $username = 'public' . '/';
 
-    private $username='public'.'/';
-
-    private $uploadDir='imagen/';
+    private $uploadDir = 'imagen/';
 
     // listar
     public function index()
@@ -23,7 +22,12 @@ class ProductoControler extends Controller
 
     public function productoTienda($id)
     {
-        return view('producto.index', compact('id'));
+        $producto = DB::table('producto')
+            ->select('*')
+            ->where('id', '=', $id)
+            ->get();
+
+        return view('producto.index', compact('producto', 'id'));
     }
 
     // crear productos
@@ -51,24 +55,20 @@ class ProductoControler extends Controller
                     'mensaje' => $validate->errors(),
                 ];
             } else {
-
-                
-                $file=$request->file('uploadfile');
-                $filename=$this->uploadDir.$file->getClientOriginalName();
-                $this->originalname=$file->getClientOriginalName();
-                if($file){
-                    Storage::disk('public')->put($filename, File::get($file));
+                if ($request->hasFile('imagen')) {
+                    $archivo = $request->file('imagen');
+                    // $carpetaDestino = 'images/';
+                    // $nombreArchivo = time() . '-' . $archivo->getClientOriginalName();
+                    // $subir = $request->file('subir')->move( public_path($carpetaDestino),$nombreArchivo);
                 }
-
-                
 
                 $Producto = new Producto();
 
                 $Producto->nombre = $request->nombre;
                 $Producto->sku = $request->sku;
                 $Producto->valor = $request->valor;
-                $Producto->image = $fileName;
                 $Producto->tienda = $request->tienda;
+                $Producto->imagen = $request->imagen;
 
                 $Producto->save();
 
@@ -83,8 +83,9 @@ class ProductoControler extends Controller
                 'mensaje' => $e,
             ];
         }
+        // return response()->json($message);
 
-        return response()->json($message);
+        return redirect()->back();
     }
 
     //actualizar productos
@@ -96,7 +97,7 @@ class ProductoControler extends Controller
                 [
                     'id' => 'required',
                     'nombre' => 'required',
-                    'sku' => 'required|unique:producto',
+                    'sku' => 'required',
                     'valor' => 'required',
                     'imagen' => 'required',
                     'tienda' => 'required',
@@ -119,7 +120,7 @@ class ProductoControler extends Controller
                         'nombre' => $request->nombre,
                         'sku' => $request->sku,
                         'valor' => $request->valor,
-                        'image' => $request->imagen,
+                        'imagen' => $request->imagen,
                         'tienda' => $request->tienda,
                     ]);
 
@@ -154,6 +155,6 @@ class ProductoControler extends Controller
             ];
         }
 
-        return response()->json($message);
+        return redirect()->back();
     }
 }
