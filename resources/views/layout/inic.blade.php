@@ -29,6 +29,11 @@
             justify-content: center;
             margin-top: 5%
         }
+        .imgProduct {
+            width: 60px;
+            height: 60px;
+            border-radius: 50px;
+        }
     </style>
 
 </head>

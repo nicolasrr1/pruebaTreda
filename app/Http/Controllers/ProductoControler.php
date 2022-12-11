@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Producto;
-use DB;
+use DB,Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ProductoControler extends Controller
@@ -34,13 +34,12 @@ class ProductoControler extends Controller
     public function storage(Request $request)
     {
         try {
-            $validate = Validator::make(
-                $request->all(),
+            $request->validate(
                 [
                     'nombre' => 'required',
                     'sku' => 'required|unique:producto',
                     'valor' => 'required',
-                    'imagen' => 'required',
+                    'imagen' => 'required |image|max:2048 ',
                     'tienda' => 'required',
                 ],
                 [
@@ -49,41 +48,31 @@ class ProductoControler extends Controller
                 ]
             );
 
-            if ($validate->fails()) {
-                $message = [
-                    'tipo' => 'error',
-                    'mensaje' => $validate->errors(),
-                ];
-            } else {
-                if ($request->hasFile('imagen')) {
-                    $archivo = $request->file('imagen');
-                    // $carpetaDestino = 'images/';
-                    // $nombreArchivo = time() . '-' . $archivo->getClientOriginalName();
-                    // $subir = $request->file('subir')->move( public_path($carpetaDestino),$nombreArchivo);
-                }
 
-                $Producto = new Producto();
+            $img =  $request->file('imagen')->store('public/images');
+            $url = Storage::url($img);
+            
+            
 
-                $Producto->nombre = $request->nombre;
-                $Producto->sku = $request->sku;
-                $Producto->valor = $request->valor;
-                $Producto->tienda = $request->tienda;
-                $Producto->imagen = $request->imagen;
 
-                $Producto->save();
 
-                $message = [
-                    'tipo' => 'susses',
-                    'mensaje' => 'Datos almacenados correctamente ',
-                ];
-            }
+            $Producto = new Producto();
+
+            $Producto->nombre = $request->nombre;
+            $Producto->sku = $request->sku;
+            $Producto->valor = $request->valor;
+            $Producto->tienda = $request->tienda;
+            $Producto->imagen = $url;
+
+            $Producto->save();
+
+          
         } catch (Exception $e) {
             $message = [
                 'tipo' => 'error',
                 'mensaje' => $e,
             ];
         }
-        // return response()->json($message);
 
         return redirect()->back();
     }
@@ -92,45 +81,32 @@ class ProductoControler extends Controller
     public function update(Request $request)
     {
         try {
-            $validate = Validator::make(
-                $request->all(),
+            $request->validate(
                 [
-                    'id' => 'required',
+                    'id' => '$required',
                     'nombre' => 'required',
-                    'sku' => 'required',
+                    'sku' => 'required|unique:producto',
                     'valor' => 'required',
-                    'imagen' => 'required',
+                    'imagen' => 'required |image|max:2048 ',
                     'tienda' => 'required',
                 ],
                 [
                     'required' => 'El campo :attribute es requerido.',
-                    'unique' => 'El campo :attribute No se puede repetir',
+                    'unique' => 'El campo :attribute No se puede repetir  ',
                 ]
             );
 
-            if ($validate->fails()) {
-                $message = [
-                    'tipo' => 'error',
-                    'mensaje' => $validate->errors(),
-                ];
-            } else {
-                DB::table('producto')
-                    ->where('id', $request->id)
-                    ->update([
-                        'nombre' => $request->nombre,
-                        'sku' => $request->sku,
-                        'valor' => $request->valor,
-                        'imagen' => $request->imagen,
-                        'tienda' => $request->tienda,
-                    ]);
+            DB::table('producto')
+                ->where('id', $request->id)
+                ->update([
+                    'nombre' => $request->nombre,
+                    'sku' => $request->sku,
+                    'valor' => $request->valor,
+                    'imagen' => $request->imagen,
+                    'tienda' => $request->tienda,
+                ]);
 
-                $message = [
-                    'tipo' => 'susses',
-                    'mensaje' => 'Datos almacenados correctamente ',
-                ];
-            }
-
-            return response()->json($message);
+            return redirect()->back();
         } catch (Exception $e) {
             return response()->json($e);
         }
@@ -143,11 +119,6 @@ class ProductoControler extends Controller
             DB::table('producto')
                 ->where('id', '=', $id)
                 ->delete();
-
-            $message = [
-                'tipo' => 'susses',
-                'mensaje' => 'Datos eliminados correctamente ',
-            ];
         } catch (\Throwable $th) {
             $message = [
                 'tipo' => 'error',

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('nombre',60);
             $table->string('sku',60)->unique();
             $table->string('valor',60);
-            $table->string('imagen',254);
+            $table->string('imagen',500);
             $table->integer('estado')->default(1);
             $table->unsignedBigInteger('tienda');
             $table->foreign('tienda')->references('id')->on('tienda');

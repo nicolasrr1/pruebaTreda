@@ -8,28 +8,42 @@
             <div class="card-body">
 
 
-                <form action="{{ route('Producto') }}" method="POST" enctype="multipart/form-data" flie="true">
+                <form action="{{ route('Producto') }}" method="POST" enctype="multipart/form-data" flie="true"
+                    enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" id="id" name="id">
                     <input type="hidden" name="tienda" value={{ $id }}>
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre</label>
                         <input type="text" name="nombre" class="form-control" id="nombre">
+                        @error('nombre')
+                            <span style="color:red">{{ $message }}</span>
+                        @enderror
                     </div>
                     <div class="mb-3">
                         <label for="sku" class="form-label">Sku</label>
                         <input type="text" name="sku" class="form-control" id="sku">
+                        @error('sku')
+                            <span style="color:red">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="mb-3">
                         <label for="sku" class="form-label">valor</label>
                         <input type="number" name="valor" class="form-control" id="sku">
+                        @error('valor')
+                            <span style="color:red">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="mb-3">
                         <label for="imagen" class="form-label">imagen</label>
-                        <input id="imagen" class="form-control" type="text" name="imagen">
+                        <input id="imagen" class="form-control" type="file" accept="image/*" name="imagen">
+                        @error('valor')
+                            <span style="color:red">{{ $message }}</span>
+                        @enderror
                     </div>
+
                     <button type="submit" id="btn" class="btn btn-primary">Submit</button>
 
                 </form>
@@ -60,7 +74,7 @@
                         <td>{{ $item->sku }}</td>
                         <td>{{ $item->valor }}</td>
                         <td>{{ $item->tienda }}</td>
-                        <td>{{ $item->imagen }}</td>
+                        <td> <img class="imgProduct" src="{{ $item->imagen }}" alt=""> </td>
                         <td>
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#exampleModal{{ $item->id }}">
@@ -121,11 +135,7 @@
 
                                     </form>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Close</button>
-                                    <button type="button" class="btn btn-primary">Save changes</button>
-                                </div>
+                               
                             </div>
                         </div>
                     </div>
